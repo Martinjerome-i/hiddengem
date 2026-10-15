@@ -1,0 +1,7 @@
+# .vercelignore
+# Exclude local master video files and scratch logs from Vercel static build
+Creating_mango_frappe_product_an.*.mp4
+scratch/
+*.bak
+*.log
+

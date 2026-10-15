@@ -113,47 +113,22 @@
          ==================================================================== -->
     <section class="section-padding menu-section" id="menu">
       <div class="container">
-        <div class="section-header">
-          <div class="section-eyebrow">
-            <span class="eyebrow-icon">✨</span> Handcrafted & Made Fresh to Order
-          </div>
+        <div class="section-header menu-header-clean">
           <h2 class="section-title">The Complete Cafe Menu</h2>
-          <p class="section-desc">
-            Select your favourite handcrafted shakes, pure fruit pressings, gelato, and warm brownies. Customise sizes, explore tasting notes, and order directly on WhatsApp.
-          </p>
         </div>
 
-        <!-- Menu Controls Bar -->
-        <div class="menu-controls-wrapper">
-          <!-- Real-Time Search Bar -->
-          <div class="menu-search-bar">
-            <span class="search-icon">🔍</span>
-            <input 
-              type="text" 
-              id="menuSearchInput" 
-              class="menu-search-input" 
-              placeholder="Search by name, fruit, flavour (e.g. mango, pistachio, cold brew, brownie)..." 
-              aria-label="Search menu items"
-            />
-            <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
-          </div>
-
-          <!-- Category Navigation Pills -->
+        <!-- Clean Primary Category Selector Bar -->
+        <div class="menu-controls-wrapper menu-controls-clean">
           <div class="category-nav-scroll" id="categoryNavList" role="tablist" aria-label="Menu categories">
             <!-- Rendered dynamically by app.js from data.js -->
           </div>
-
-          <!-- Quick Filter Chips -->
-          <div class="filter-tags-row">
-            <button type="button" class="filter-tag-chip active" data-filter-tag="all">All Items</button>
-            <button type="button" class="filter-tag-chip" data-filter-tag="bestseller">⭐ Bestsellers</button>
-            <button type="button" class="filter-tag-chip" data-filter-tag="featured">✨ Cafe Specials</button>
-          </div>
         </div>
 
-        <!-- Product Cards Grid -->
-        <div class="product-grid" id="menuProductGrid">
-          <!-- Populated dynamically by app.js from data.js -->
+        <!-- Interactive Premium Menu Book Stage -->
+        <div class="menu-book-section" id="menuBookSection">
+          <div class="menu-book-mount" id="menuProductGrid">
+            <!-- Populated dynamically by app.js with the interactive menu book -->
+          </div>
         </div>
       </div>
 
@@ -270,90 +245,80 @@
     <!-- ====================================================================
          VISIT US & LOCATION
          ==================================================================== -->
-    <section class="section-padding location-section" id="location">
+    <section class="location-section" id="location">
       <div class="container">
-        <div class="section-header">
-          <div class="section-eyebrow">
-            <span class="eyebrow-icon">📍</span> Come Say Hi
+        <div class="location-compact-wrap">
+          <!-- Left: Scooter Couple Delivery Illustration -->
+          <div class="location-visual-col">
+            <div class="scooter-illustration-wrap">
+              <img 
+                src="assets/illustrations/scooter-delivery.png" 
+                alt="Hidden Gem Cafe Scooter Delivery" 
+                class="scooter-delivery-img"
+                loading="lazy"
+                width="480"
+                height="320"
+              />
+              <div class="scooter-ground-shadow" aria-hidden="true"></div>
+            </div>
           </div>
-          <h2 class="section-title">Find Us in Pollachi</h2>
-          <p class="section-desc">Stop by for a slow coffee or order direct to your doorstep via WhatsApp.</p>
-        </div>
 
-        <div class="location-grid">
-          <!-- Information Card -->
-          <div class="location-info-card">
-            <div>
-              <div class="info-group">
-                <div class="info-label"><span>📍</span> Store Address</div>
-                <div class="info-text">
-                  <strong>115, Siva Complex, Kumaran Street</strong><br />
-                  Palladam Road, Pollachi<br />
-                  Tamil Nadu 642002<br />
-                  <span class="info-landmark">(Kumaran Street, Palladam Road)</span>
+          <!-- Right: Clean Location Information Block -->
+          <div class="location-details-col">
+            <div class="location-eyebrow">
+              <span class="location-eyebrow-accent" aria-hidden="true">📍</span>
+              <span>COME SAY HI</span>
+            </div>
+
+            <h2 class="location-title">Find Us in Pollachi</h2>
+
+            <div class="location-info-block">
+              <!-- Store Address -->
+              <div class="location-row location-row-address">
+                <div class="location-row-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                    <circle cx="12" cy="10" r="3"></circle>
+                  </svg>
+                </div>
+                <div class="location-row-content">
+                  <span class="location-label">Store Address</span>
+                  <address class="location-address-text">
+                    <strong>115, Siva Complex, Kumaran Street</strong><br />
+                    Palladam Road, Pollachi, Tamil Nadu 642002
+                  </address>
                 </div>
               </div>
 
-              <div class="info-group">
-                <div class="info-label"><span>⏰</span> Opening Hours</div>
-                <div class="info-text">
-                  <div class="hours-row">
-                    <span>Monday – Sunday:</span>
-                    <strong>8:00 AM – 11:30 PM</strong>
-                  </div>
-                  <div class="hours-row">
-                    <span>Weekends (Fri–Sun):</span>
-                    <strong>8:00 AM – 12:30 AM</strong>
-                  </div>
-                  <div class="status-live-badge">
-                    <span class="pulse-dot"></span>
-                    <span>Open Now · Dine-in, Takeaway & Delivery</span>
-                  </div>
+              <!-- Opening Hours -->
+              <div class="location-row location-row-hours">
+                <div class="location-row-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                  </svg>
                 </div>
-              </div>
-
-              <div class="info-group">
-                <div class="info-label"><span>💬</span> WhatsApp Ordering Line</div>
-                <div class="info-text">
-                  <a href="https://wa.me/919566905775" target="_blank" rel="noopener noreferrer" class="whatsapp-phone-link">
-                    <span>+91 95669 05775</span>
-                    <span class="whatsapp-badge-chip">Active</span>
-                  </a>
-                  <div class="info-subnote">Orders placed on WhatsApp are prepared immediately by our baristas.</div>
+                <div class="location-row-content">
+                  <span class="location-label">Opening Hours</span>
+                  <div class="location-hours-text">
+                    <span>Monday – Sunday: <strong>8:00 AM – 11:30 PM</strong></span>
+                    <span class="location-hours-note">Dine-in · Takeaway · Doorstep Delivery</span>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="location-actions">
-              <a href="https://maps.google.com/?q=115+Siva+Complex+Kumaran+Street+Palladam+Road+Pollachi+Tamil+Nadu+642002" target="_blank" rel="noopener noreferrer" class="btn btn-hero-primary">
-                <span>Get Directions on Google Maps</span>
-                <span>↗</span>
-              </a>
-              <button type="button" class="btn-header-whatsapp" data-cart-toggle>
-                <span>Start WhatsApp Order</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Interactive Map / Graphic Container -->
-          <div class="location-map-wrap">
-            <div class="map-card-inner">
-              <div class="map-pin-pulse">
-                <span class="map-pin-icon">📍</span>
-              </div>
-              <h3 class="map-card-title">HIDDEN GEM CAFE</h3>
-              <p class="map-card-subtitle">Kumaran Street · Palladam Road · Pollachi</p>
-              <div class="map-card-chips">
-                <span class="map-chip">🚗 Parking Available</span>
-                <span class="map-chip">🛵 Doorstep Delivery</span>
-                <span class="map-chip">☕ Dine-in & Takeaway</span>
-              </div>
-              <p class="map-card-address">
-                115, Siva Complex, Kumaran Street, Palladam Road, Pollachi, Tamil Nadu 642002.
-              </p>
-              <a href="https://maps.google.com/?q=115+Siva+Complex+Kumaran+Street+Palladam+Road+Pollachi+Tamil+Nadu+642002" target="_blank" rel="noopener noreferrer" class="btn btn-map-action">
-                <span>Open in Google Maps App</span>
-                <span>↗</span>
+            <!-- Get Directions Action -->
+            <div class="location-action">
+              <a 
+                href="https://maps.google.com/?q=115+Siva+Complex+Kumaran+Street+Palladam+Road+Pollachi+Tamil+Nadu+642002" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                class="btn-get-directions"
+                id="btnGetDirections"
+              >
+                <span>Get Directions</span>
+                <span class="btn-arrow" aria-hidden="true">↗</span>
               </a>
             </div>
           </div>
@@ -372,79 +337,99 @@
   </main>
 
   <!-- ======================================================================
-       FOOTER
+       FOOTER (Minimal Elegant Design with Organic Wavy Curves & Coffee Botanicals)
        ====================================================================== -->
-  <footer class="site-footer">
-    <div class="container">
-      <div class="footer-grid">
-        <div class="footer-brand-col">
-          <div class="footer-brand-wrap">
-            <span class="footer-brand-title">HIDDEN GEM</span>
-            <span class="footer-brand-script">Cafe</span>
-            <span class="footer-steam-icon" title="Freshly Brewed">☕</span>
-          </div>
-          <p class="footer-desc">
-            Your neighbourhood haven for handcrafted shakes, slow-steeped cold brews, pure fruit pressings, and warm fudge brownies. Handcrafted with love in Pollachi.
-          </p>
-          <div class="footer-badges-row">
-            <span class="footer-mini-badge">🌱 100% Real Farm Produce</span>
-            <span class="footer-mini-badge">🐾 Pet Friendly</span>
-          </div>
-        </div>
+  <footer class="site-footer minimal-footer" id="footer">
 
-        <div>
-          <h4 class="footer-heading">Quick Links</h4>
-          <ul class="footer-links">
-            <li><a href="#home" class="footer-link">Home (Scroll Hero)</a></li>
-            <li><a href="#menu" class="footer-link">Menu & Order Online</a></li>
-            <li><a href="#story" class="footer-link">Our Story & Craft</a></li>
-            <li><a href="#location" class="footer-link">Store Location</a></li>
-          </ul>
-        </div>
+    <!-- Main Footer Body with Background Organic Waves & Artwork -->
+    <div class="footer-art-backdrop" aria-hidden="true">
+      <svg viewBox="0 0 1440 160" fill="none" preserveAspectRatio="none" class="footer-bg-svg">
+        <!-- Sand organic background shape -->
+        <path d="M300,160 C460,95 660,125 800,115 C960,105 1120,150 1440,120 L1440,160 Z" fill="#F5ECE1" opacity="0.9"></path>
+        
+        <!-- Sage green accent curve on right -->
+        <path d="M1040,160 C1130,110 1230,120 1320,148 C1370,160 1440,160 1440,160 Z" fill="#718F6B" opacity="0.92"></path>
+        
+        <!-- Terracotta accent curve on right -->
+        <path d="M1160,160 C1240,135 1320,115 1440,142 L1440,160 Z" fill="#DE7F50" opacity="0.95"></path>
+        
+        <!-- Terracotta sweeping accent line spanning across footer -->
+        <path d="M0,65 C180,42 360,125 540,135 C740,145 920,95 1120,125 C1240,142 1360,95 1440,115" stroke="#DE7F50" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.85"></path>
+      </svg>
 
-        <div>
-          <h4 class="footer-heading">Signature Gems</h4>
-          <ul class="footer-links">
-            <li><a href="#menu" class="footer-link">Strawberry Cream Shake</a></li>
-            <li><a href="#menu" class="footer-link">Alphonso Mango Bliss</a></li>
-            <li><a href="#menu" class="footer-link">Pistachio Dream Shake</a></li>
-            <li><a href="#menu" class="footer-link">Cold-Pressed Watermelon</a></li>
-            <li><a href="#menu" class="footer-link">Warm Belgian Fudge Brownie</a></li>
-          </ul>
-        </div>
-
-        <div>
-          <h4 class="footer-heading">Cafe Hours & Contact</h4>
-          <div class="footer-hours-box">
-            <div class="footer-hours-line">
-              <span>Mon – Thu:</span>
-              <strong>8:00 AM – 11:30 PM</strong>
-            </div>
-            <div class="footer-hours-line">
-              <span>Fri – Sun:</span>
-              <strong>8:00 AM – 12:30 AM</strong>
-            </div>
-          </div>
-          <p class="footer-contact-item">
-            <strong>WhatsApp Ordering:</strong><br />
-            <a href="https://wa.me/919566905775" target="_blank" rel="noopener noreferrer" class="footer-wa-link">
-              <span>💬 +91 95669 05775</span>
-            </a>
-          </p>
-          <p class="footer-address-text">
-            📍 115, Siva Complex, Kumaran Street, Palladam Road, Pollachi, Tamil Nadu 642002
-          </p>
-        </div>
+      <!-- Botanical Coffee Leaves & Beans (Left) -->
+      <div class="footer-deco-left" aria-hidden="true">
+        <svg viewBox="0 0 180 140" width="180" height="140" fill="none">
+          <!-- Coffee leaves -->
+          <g class="coffee-branch">
+            <path d="M15,140 C24,108 38,82 60,58" stroke="#2D452B" stroke-width="3" stroke-linecap="round"></path>
+            <!-- Leaf 1 -->
+            <path d="M16,130 C7,96 0,76 20,54 C40,74 30,104 16,130 Z" fill="#3A5636"></path>
+            <path d="M16,130 C9,98 9,75 20,54" stroke="#4E7348" stroke-width="1.5"></path>
+            <!-- Leaf 2 -->
+            <path d="M36,94 C44,64 64,48 84,56 C80,80 58,94 36,94 Z" fill="#4B6B46"></path>
+            <path d="M36,94 C54,74 68,64 84,56" stroke="#5D8557" stroke-width="1.5"></path>
+            <!-- Leaf 3 -->
+            <path d="M54,68 C59,38 74,26 90,32 C86,56 70,68 54,68 Z" fill="#3D5A38"></path>
+            <path d="M54,68 C68,48 80,38 90,32" stroke="#4E7348" stroke-width="1.5"></path>
+          </g>
+          <!-- Coffee Beans on branch -->
+          <g class="coffee-beans-group">
+            <!-- Bean 1 -->
+            <g transform="translate(108, 68) rotate(-25)">
+              <ellipse cx="14" cy="9" rx="14" ry="9" fill="#5A3828"></ellipse>
+              <path d="M3,9 Q14,14 25,9" stroke="#362015" stroke-width="1.5" fill="none"></path>
+            </g>
+            <!-- Bean 2 -->
+            <g transform="translate(110, 100) rotate(15)">
+              <ellipse cx="14" cy="9" rx="14" ry="9" fill="#6B4432"></ellipse>
+              <path d="M3,9 Q14,4 25,9" stroke="#3D2418" stroke-width="1.5" fill="none"></path>
+            </g>
+          </g>
+          <!-- Decorative dots -->
+          <circle cx="152" cy="118" r="3.5" fill="#DE7F50" opacity="0.75"></circle>
+          <circle cx="168" cy="112" r="2.5" fill="#E8AF8A" opacity="0.65"></circle>
+        </svg>
       </div>
 
-      <div class="footer-bottom">
-        <div>© 2026 HIDDEN GEM CAFE. All rights reserved. Handcrafted with pride in Pollachi, Tamil Nadu.</div>
-        <div class="footer-bottom-links">
-          <span>Sample prices marked as editable demo content</span>
-          <span>·</span>
-          <span>WhatsApp Direct Ordering System</span>
-        </div>
+      <!-- Scattered Beans (Center) -->
+      <div class="footer-deco-center" aria-hidden="true">
+        <svg viewBox="0 0 80 50" width="80" height="50" fill="none">
+          <g transform="translate(28, 14) rotate(42)">
+            <ellipse cx="12" cy="8" rx="12" ry="8" fill="#5A3828"></ellipse>
+            <path d="M2,8 Q12,12 22,8" stroke="#362015" stroke-width="1.2" fill="none"></path>
+          </g>
+          <circle cx="12" cy="34" r="3" fill="#E8AF8A" opacity="0.6"></circle>
+          <circle cx="68" cy="12" r="2.5" fill="#DE7F50" opacity="0.55"></circle>
+        </svg>
       </div>
+
+      <!-- Right Accent & Beans -->
+      <div class="footer-deco-right" aria-hidden="true">
+        <svg viewBox="0 0 160 140" width="160" height="140" fill="none">
+          <g transform="translate(48, 72) rotate(-35)">
+            <ellipse cx="11" cy="7" rx="11" ry="7" fill="#5A3828"></ellipse>
+            <path d="M2,7 Q11,10 20,7" stroke="#362015" stroke-width="1.2" fill="none"></path>
+          </g>
+          <circle cx="82" cy="88" r="3" fill="#587954" opacity="0.8"></circle>
+          <circle cx="98" cy="100" r="3.5" fill="#587954" opacity="0.8"></circle>
+          <circle cx="86" cy="112" r="2.5" fill="#587954" opacity="0.7"></circle>
+          <path d="M122,62 C132,58 146,66 142,78 C136,88 120,84 118,74 Z" fill="#F5ECE1"></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Centered Content -->
+    <div class="container footer-minimal-container">
+      <div class="footer-minimal-brand">
+        <span class="footer-brand-title">HIDDEN GEM</span>
+        <span class="footer-brand-script">Cafe</span>
+        <span class="footer-brand-icon" aria-hidden="true">☕</span>
+      </div>
+
+      <p class="footer-minimal-copy">
+        © 2026 Hidden Gem Cafe. Handcrafted with love in Pollachi.
+      </p>
     </div>
   </footer>
 

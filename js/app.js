@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", () => {
   let activeCategory = "all";
   let searchQuery = "";
   let activeFilterTag = "all";
+  let isBookOpen = false;
+  let currentSpread = 0;
+  let isAnimating = false;
 
   // 2. Elements Cache
   const menuContainer = document.getElementById("menuProductGrid");
@@ -26,7 +29,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileBar = document.getElementById("stickyMobileCartBar");
 
   // ==========================================
-  // MENU RENDERING & FILTERING
+  // CATEGORY SELECTOR & FILTERING
   // ==========================================
 
   function renderCategories() {
@@ -48,14 +51,21 @@ document.addEventListener("DOMContentLoaded", () => {
     // Bind category click events
     categoryNav.querySelectorAll(".category-pill").forEach(btn => {
       btn.addEventListener("click", () => {
-        activeCategory = btn.getAttribute("data-category-id");
-        categoryNav.querySelectorAll(".category-pill").forEach(b => {
-          b.classList.remove("active");
-          b.setAttribute("aria-pressed", "false");
-        });
-        btn.classList.add("active");
-        btn.setAttribute("aria-pressed", "true");
-        renderMenu();
+        const newCat = btn.getAttribute("data-category-id");
+        if (newCat !== activeCategory) {
+          activeCategory = newCat;
+          // Reset pagination safely whenever category changes
+          currentSpread = 0;
+          
+          categoryNav.querySelectorAll(".category-pill").forEach(b => {
+            b.classList.remove("active");
+            b.setAttribute("aria-pressed", "false");
+          });
+          btn.classList.add("active");
+          btn.setAttribute("aria-pressed", "true");
+          
+          renderMenuBook();
+        }
       });
     });
   }
@@ -68,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
       items = items.filter(p => p.categoryId === activeCategory);
     }
 
-    // Filter by Search Query
+    // Filter by Search Query (if search input exists and is used)
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
       items = items.filter(p => 
@@ -79,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     }
 
-    // Filter by Dietary/Special Tag
+    // Filter by Dietary/Special Tag (if tag exists)
     if (activeFilterTag === "bestseller") {
       items = items.filter(p => p.isBestseller);
     } else if (activeFilterTag === "featured") {
@@ -89,140 +99,511 @@ document.addEventListener("DOMContentLoaded", () => {
     return items;
   }
 
-  function renderMenu() {
+  // ==========================================
+  // INTERACTIVE PREMIUM MENU BOOK ENGINE
+  // ==========================================
+
+  function getProductAccentTheme(product) {
+    const id = product.id.toLowerCase();
+    if (id.includes("strawberry")) return "strawberry";
+    if (id.includes("mango")) return "mango";
+    if (id.includes("pistachio")) return "pistachio";
+    if (id.includes("watermelon") || id.includes("juice")) return "watermelon";
+    if (id.includes("brownie")) return "brownie";
+    if (id.includes("gelato") || id.includes("icecream")) return "gelato";
+    return "terracotta";
+  }
+
+  function renderMenuBook() {
     if (!menuContainer) return;
     const items = getFilteredProducts();
+    const categoryObj = (window.MENU_CATEGORIES || []).find(c => c.id === activeCategory) || { name: "All Items", icon: "✨" };
 
-    if (items.length === 0) {
+    // --- STATE 1: CLOSED MENU BOOK (Cover View) ---
+    if (!isBookOpen) {
       menuContainer.innerHTML = `
-        <div class="menu-empty-state">
-          <div class="empty-icon">🔍</div>
-          <h3>No delicious treats found</h3>
-          <p>We couldn't find anything matching "<strong>${window.cart.escapeHtml(searchQuery)}</strong>". Try another keyword or browse all categories.</p>
-          <button type="button" class="btn btn-terracotta" id="resetSearchBtn">View All Items</button>
+        <div class="menu-book-container book-closed-mode" id="menuBookContainer">
+          <div 
+            class="menu-book-cover" 
+            id="menuBookCover" 
+            role="button" 
+            tabindex="0" 
+            aria-label="Open Hidden Gem Cafe Menu Book"
+          >
+            <!-- Decorative outer spine edge -->
+            <div class="cover-spine-edge" aria-hidden="true"></div>
+            
+            <!-- Embossed gold filigree frame -->
+            <div class="cover-inner-frame">
+              <div class="cover-header-crest">
+                <span class="crest-ornament">❦</span>
+                <span class="crest-text">POLLACHI · TAMIL NADU · EST. 2026</span>
+                <span class="crest-ornament">❦</span>
+              </div>
+
+              <div class="cover-brand-center">
+                <div class="cover-seal-icon">☕</div>
+                <h3 class="cover-brand-heading">HIDDEN GEM</h3>
+                <div class="cover-brand-script">Artisanal Cafe &amp; Bakery</div>
+              </div>
+
+              <div class="cover-divider-flourish">
+                <span class="flourish-line"></span>
+                <span class="flourish-gem">◆</span>
+                <span class="flourish-line"></span>
+              </div>
+
+              <div class="cover-category-badge">
+                <span class="badge-icon">${categoryObj.icon}</span>
+                <span class="badge-title">${categoryObj.name}</span>
+                <span class="badge-count">(${items.length} ${items.length === 1 ? 'Creation' : 'Creations'})</span>
+              </div>
+
+              <p class="cover-description">
+                Handcrafted Shakes · Cold-Pressed Juices · Italian Gelato · Warm Fudge Brownies
+              </p>
+
+              <div class="cover-action-prompt">
+                <div class="btn-open-book-cta">
+                  <span class="cta-book-icon">📖</span>
+                  <span class="cta-text">Open Menu</span>
+                  <span class="cta-arrow">→</span>
+                </div>
+                <div class="cover-hint-sub">Tap or click the cover to open</div>
+              </div>
+            </div>
+
+            <!-- Silk ribbon bookmark accent -->
+            <div class="cover-ribbon-bookmark" aria-hidden="true"></div>
+          </div>
         </div>
       `;
-      const resetBtn = document.getElementById("resetSearchBtn");
-      if (resetBtn) {
-        resetBtn.addEventListener("click", () => {
-          if (searchInput) searchInput.value = "";
-          searchQuery = "";
-          activeCategory = "all";
-          renderCategories();
-          renderMenu();
-        });
-      }
+
+      bindCoverEvents();
       return;
     }
 
-    menuContainer.innerHTML = items.map(product => {
-      const defaultVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
-      const initialPrice = product.basePrice + (defaultVariant ? defaultVariant.priceDelta : 0);
+    // --- STATE 2: OPEN MENU BOOK (Desktop 2-Page Spread vs Mobile Single-Page) ---
+    const isMobile = window.matchMedia("(max-width: 640px)").matches;
+    const itemsPerSpread = isMobile ? 2 : 4;
+    const totalSpreads = Math.max(1, Math.ceil(items.length / itemsPerSpread));
+    
+    // Bounds check
+    if (currentSpread >= totalSpreads) currentSpread = totalSpreads - 1;
+    if (currentSpread < 0) currentSpread = 0;
 
-      return `
-        <article class="product-card" id="card-${product.id}" data-product-id="${product.id}">
-          <div class="product-image-wrap">
-            <img 
-              src="${product.image}" 
-              alt="${product.name}" 
-              class="product-image" 
-              loading="lazy"
-              onerror="this.src='assets/frames-webp/ezgif-frame-001.webp'"
-            />
-            ${product.badge ? `
-              <span class="product-badge badge-${product.badgeType || 'terracotta'}">
-                ${product.badge}
-              </span>
-            ` : ''}
-            <div class="veg-badge" title="100% Vegetarian">
-              <span class="veg-dot"></span>
-            </div>
-          </div>
+    const startIndex = currentSpread * itemsPerSpread;
+    const isFirstSpread = currentSpread === 0;
+    const isLastSpread = currentSpread === totalSpreads - 1;
 
-          <div class="product-details">
-            <div class="product-header">
-              <div>
-                ${product.tagline ? `<div class="product-tagline">${product.tagline}</div>` : ''}
-                <h3 class="product-title">${product.name}</h3>
-              </div>
-              <div class="product-price-wrap">
-                <span class="currency">₹</span>
-                <span class="product-price" id="price-${product.id}">${initialPrice}</span>
-              </div>
-            </div>
+    if (isMobile) {
+      // --- MOBILE SINGLE-PAGE MENU BOOK LAYOUT ---
+      const pageItems = items.slice(startIndex, startIndex + 2);
 
-            <p class="product-desc">${product.description}</p>
-            
-            ${product.tastingNotes ? `
-              <div class="tasting-notes">
-                <span class="notes-icon">✨</span>
-                <span>${product.tastingNotes}</span>
-              </div>
-            ` : ''}
+      menuContainer.innerHTML = `
+        <div class="menu-book-container book-opened-mode book-mobile-mode" id="menuBookContainer">
+          <div class="menu-book-spread mobile-single-page" id="menuBookSpread">
+            <!-- Discreet Top-Right Quick Close Tab -->
+            <button type="button" class="book-top-close-tab" id="bookQuickClose" aria-label="Close Menu Book" title="Close Menu Book">
+              <span class="tab-close-icon">✕</span>
+              <span class="tab-close-text">Close</span>
+            </button>
 
-            <!-- Variant Selector -->
-            ${product.variants && product.variants.length > 1 ? `
-              <div class="variant-selector-wrap">
-                <label for="variant-${product.id}" class="variant-label">Choose Size / Variant:</label>
-                <div class="variant-chips" id="variantChips-${product.id}">
-                  ${product.variants.map((v, i) => `
-                    <button 
-                      type="button" 
-                      class="variant-chip ${i === 0 ? 'selected' : ''}" 
-                      data-variant-id="${v.id}"
-                      data-price-delta="${v.priceDelta}"
-                      data-product-id="${product.id}"
-                    >
-                      ${v.name} ${v.priceDelta > 0 ? `(+₹${v.priceDelta})` : ''}
-                    </button>
-                  `).join('')}
+            <!-- SINGLE MOBILE BOOK PAGE -->
+            <article class="menu-page page-single" aria-label="Menu Page">
+              <div class="page-inner-content">
+                <header class="book-page-header">
+                  <span class="header-brand">HIDDEN GEM CAFE</span>
+                  <span class="header-ornament">· ☕ ·</span>
+                  <span class="header-location">${categoryObj.name.toUpperCase()}</span>
+                </header>
+
+                <div class="page-editorial-list mobile-editorial-list">
+                  ${pageItems.map((p) => renderBookProductItem(p, true, true)).join('')}
+                  ${pageItems.length < 2 ? renderEditorialVignette(
+                    "The Artisan's Promise", 
+                    "Slow-churned, cold-pressed, and freshly baked daily in Pollachi. 100% vegetarian, pure farm fruit, and zero artificial syrups."
+                  ) : ''}
                 </div>
+
+                <!-- Bottom Integrated Navigation -->
+                <footer class="book-page-footer mobile-page-footer">
+                  ${!isFirstSpread ? `
+                    <button type="button" class="book-corner-nav corner-nav-prev" id="bookCornerPrev" aria-label="Previous Page">
+                      <span class="corner-chevron" aria-hidden="true">‹</span>
+                      <span class="corner-label">Previous</span>
+                    </button>
+                  ` : `<div class="corner-spacer" aria-hidden="true"></div>`}
+
+                  ${!isLastSpread ? `
+                    <button type="button" class="book-corner-nav corner-nav-next" id="bookCornerNext" aria-label="Next Page">
+                      <span class="corner-label">Next</span>
+                      <span class="corner-chevron" aria-hidden="true">›</span>
+                    </button>
+                  ` : `
+                    <button type="button" class="book-corner-nav corner-nav-close" id="bookCornerClose" aria-label="Close Menu Book">
+                      <span class="corner-close-icon" aria-hidden="true">✕</span>
+                      <span class="corner-label">Close Menu</span>
+                    </button>
+                  `}
+                </footer>
               </div>
-            ` : ''}
-
-            <div class="card-action-bar">
-              <!-- Stepper -->
-              <div class="quantity-stepper">
-                <button type="button" class="stepper-btn minus" data-stepper-btn="minus" data-target="${product.id}" aria-label="Decrease quantity">−</button>
-                <span class="stepper-value" id="qty-${product.id}">1</span>
-                <button type="button" class="stepper-btn plus" data-stepper-btn="plus" data-target="${product.id}" aria-label="Increase quantity">+</button>
-              </div>
-
-              <!-- Add to Cart Button -->
-              <button 
-                type="button" 
-                class="btn btn-add-cart" 
-                data-add-product="${product.id}"
-                aria-label="Add ${product.name} to cart"
-              >
-                <span class="btn-icon">🛒</span>
-                <span class="btn-text">Add to Cart</span>
-              </button>
-            </div>
-
-            <div class="sample-price-tag">
-              <span>Sample price · Editable demo content</span>
-            </div>
+            </article>
           </div>
-        </article>
+        </div>
       `;
-    }).join("");
 
-    bindProductCardEvents();
+      bindOpenBookEvents(totalSpreads);
+      return;
+    }
+
+    // --- DESKTOP & TABLET TWO-PAGE PHYSICAL SPREAD ---
+    const leftItems = items.slice(startIndex, startIndex + 2);
+    const rightItems = items.slice(startIndex + 2, startIndex + 4);
+
+    menuContainer.innerHTML = `
+      <div class="menu-book-container book-opened-mode" id="menuBookContainer">
+        <!-- Open Two-Page Physical Spread -->
+        <div class="menu-book-spread" id="menuBookSpread">
+          <!-- Discreet Top-Right Quick Close Tab -->
+          <button type="button" class="book-top-close-tab" id="bookQuickClose" aria-label="Close Menu Book" title="Close Menu Book">
+            <span class="tab-close-icon">✕</span>
+            <span class="tab-close-text">Close</span>
+          </button>
+
+          <!-- LEFT PAGE -->
+          <article class="menu-page page-left" aria-label="Menu Left Page">
+            <div class="page-inner-content">
+              <header class="book-page-header">
+                <span class="header-brand">HIDDEN GEM CAFE</span>
+                <span class="header-ornament">· ☕ ·</span>
+                <span class="header-location">POLLACHI</span>
+              </header>
+
+              <div class="page-editorial-list">
+                ${leftItems.map((p, idx) => renderBookProductItem(p, idx % 2 === 0, false)).join('')}
+                ${leftItems.length === 0 ? renderEditorialVignette(
+                  "Handcrafted to Order",
+                  "Every creation is prepared fresh with farm-direct ingredients and artisan passion."
+                ) : ''}
+              </div>
+
+              <!-- Bottom-Left Integrated Navigation -->
+              <footer class="book-page-footer page-footer-left">
+                ${!isFirstSpread ? `
+                  <button type="button" class="book-corner-nav corner-nav-prev" id="bookCornerPrev" aria-label="Previous Page">
+                    <span class="corner-chevron" aria-hidden="true">‹</span>
+                    <span class="corner-label">Previous</span>
+                  </button>
+                ` : `<div class="corner-spacer" aria-hidden="true"></div>`}
+              </footer>
+            </div>
+          </article>
+
+          <!-- CENTRAL 3D BOOK SPINE -->
+          <div class="menu-book-spine" aria-hidden="true">
+            <div class="spine-depth-gradient"></div>
+            <div class="spine-binding-stitch"></div>
+          </div>
+
+          <!-- RIGHT PAGE -->
+          <article class="menu-page page-right" aria-label="Menu Right Page">
+            <div class="page-inner-content">
+              <header class="book-page-header">
+                <span class="header-brand">${categoryObj.name.toUpperCase()}</span>
+                <span class="header-ornament">· ✨ ·</span>
+                <span class="header-location">FRESH CRAFT</span>
+              </header>
+
+              <div class="page-editorial-list">
+                ${rightItems.map((p, idx) => renderBookProductItem(p, idx % 2 === 0, false)).join('')}
+                ${rightItems.length < 2 ? renderEditorialVignette(
+                  "The Artisan's Promise", 
+                  "Slow-churned, cold-pressed, and freshly baked daily in Pollachi. 100% vegetarian, pure farm fruit, and zero artificial syrups."
+                ) : ''}
+              </div>
+
+              <!-- Bottom-Right Integrated Navigation / Close Action -->
+              <footer class="book-page-footer page-footer-right">
+                ${!isLastSpread ? `
+                  <button type="button" class="book-corner-nav corner-nav-next" id="bookCornerNext" aria-label="Next Page">
+                    <span class="corner-label">Next</span>
+                    <span class="corner-chevron" aria-hidden="true">›</span>
+                  </button>
+                ` : `
+                  <button type="button" class="book-corner-nav corner-nav-close" id="bookCornerClose" aria-label="Close Menu Book">
+                    <span class="corner-close-icon" aria-hidden="true">✕</span>
+                    <span class="corner-label">Close Menu</span>
+                  </button>
+                `}
+              </footer>
+            </div>
+          </article>
+        </div>
+      </div>
+    `;
+
+    bindOpenBookEvents(totalSpreads);
   }
 
-  function bindProductCardEvents() {
-    // 1. Variant Chip Click
-    document.querySelectorAll(".variant-chip").forEach(chip => {
-      chip.addEventListener("click", () => {
-        const prodId = chip.getAttribute("data-product-id");
-        const parent = chip.closest(".variant-chips");
-        parent.querySelectorAll(".variant-chip").forEach(c => c.classList.remove("selected"));
-        chip.classList.add("selected");
+  // Render individual product in colorful editorial cafe style with alternating zigzag & tasting pills
+  function renderBookProductItem(product, isImageLeft, isMobileView = false) {
+    const defaultVariant = product.variants && product.variants.length > 0 ? product.variants[0] : null;
+    const initialPrice = product.basePrice + (defaultVariant ? defaultVariant.priceDelta : 0);
+    const hasVariants = product.variants && product.variants.length > 1;
+    const accentTheme = getProductAccentTheme(product);
 
-        // Update displayed price
-        const delta = parseInt(chip.getAttribute("data-price-delta"), 10) || 0;
-        const product = window.MENU_PRODUCTS.find(p => p.id === prodId);
+    // Parse tasting notes into elegant pills
+    const notes = product.tastingNotes ? product.tastingNotes.split('·').map(s => s.trim()).filter(Boolean) : [];
+
+    return `
+      <div class="editorial-product-item ${isImageLeft ? 'item-zigzag-left' : 'item-zigzag-right'} accent-${accentTheme} ${isMobileView ? 'item-mobile-row' : ''}" id="item-${product.id}" data-product-id="${product.id}">
+        <!-- Image Box -->
+        <div class="editorial-image-wrap">
+          <img 
+            src="${product.image}" 
+            alt="${product.name}" 
+            class="editorial-image" 
+            loading="lazy" 
+            onerror="this.src='assets/products/strawberry-cream-shake.jpg'"
+          />
+          <div class="editorial-veg-mark" title="100% Vegetarian">
+            <span class="veg-dot"></span>
+          </div>
+          ${product.isBestseller ? `
+            <div class="bestseller-stamp-badge" title="Bestseller">
+              <span>BEST</span>
+              <span>SELLER</span>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Content Box -->
+        <div class="editorial-content-wrap">
+          <div class="editorial-title-row">
+            <h4 class="editorial-title">${product.name}</h4>
+            <span class="editorial-dots-leader" aria-hidden="true"></span>
+            <div class="editorial-price-wrap">
+              <span class="currency">₹</span>
+              <span class="product-price" id="price-${product.id}">${initialPrice}</span>
+            </div>
+          </div>
+
+          ${product.tagline ? `<div class="editorial-tagline">${product.tagline}</div>` : ''}
+          <p class="editorial-desc">${product.description}</p>
+          
+          ${notes.length > 0 ? `
+            <div class="editorial-tasting-pills">
+              ${notes.slice(0, 2).map(n => `
+                <span class="tasting-pill-tag">
+                  <span class="pill-sparkle">✦</span>
+                  <span class="pill-text">${n}</span>
+                </span>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          <div class="editorial-actions-bar">
+            ${hasVariants ? `
+              <div class="editorial-variant-wrap">
+                <select class="editorial-variant-select" data-variant-select="${product.id}" aria-label="Select variant for ${product.name}">
+                  ${product.variants.map((v, i) => `
+                    <option value="${v.id}" data-delta="${v.priceDelta}" ${i === 0 ? 'selected' : ''}>
+                      ${v.name} ${v.priceDelta > 0 ? `(+₹${v.priceDelta})` : ''}
+                    </option>
+                  `).join('')}
+                </select>
+              </div>
+            ` : ''}
+
+            <button 
+              type="button" 
+              class="btn-editorial-add-cart" 
+              data-add-product="${product.id}" 
+              aria-label="Add ${product.name} to cart"
+            >
+              <span class="cart-btn-icon">🛒</span>
+              <span class="cart-btn-text">Add to Cart</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  // Editorial Callout Vignette for balanced book layout
+  function renderEditorialVignette(title, text) {
+    return `
+      <div class="editorial-craft-vignette">
+        <div class="craft-vignette-emblem">❦</div>
+        <h5 class="craft-vignette-title">${title}</h5>
+        <p class="craft-vignette-desc">${text}</p>
+        <div class="craft-vignette-badge">
+          <span>★ 100% PURE &amp; HONEST INGREDIENTS ★</span>
+        </div>
+      </div>
+    `;
+  }
+
+  // Bind Cover Click Events
+  function bindCoverEvents() {
+    const cover = document.getElementById("menuBookCover");
+    if (!cover) return;
+
+    const openAction = () => {
+      if (isAnimating) return;
+      isAnimating = true;
+      cover.classList.add("is-opening");
+      const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 40 : 400;
+      setTimeout(() => {
+        isBookOpen = true;
+        currentSpread = 0;
+        renderMenuBook();
+        isAnimating = false;
+      }, delay);
+    };
+
+    cover.addEventListener("click", openAction);
+    cover.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openAction();
+      }
+    });
+  }
+
+  // Touch Swipe Gesture Listener
+  function bindTouchSwipe(container, onSwipeLeft, onSwipeRight) {
+    if (!container) return;
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+
+    container.addEventListener("touchstart", (e) => {
+      if (e.touches.length === 1) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+      }
+    }, { passive: true });
+
+    container.addEventListener("touchend", (e) => {
+      if (e.changedTouches.length === 1) {
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const deltaX = touchEndX - touchStartX;
+        const deltaY = touchEndY - touchStartY;
+        const elapsedTime = Date.now() - touchStartTime;
+
+        // Check deliberate horizontal swipe: threshold > 45px, mostly horizontal, duration < 700ms
+        if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > 1.4 * Math.abs(deltaY) && elapsedTime < 700) {
+          if (deltaX < 0) {
+            onSwipeLeft();
+          } else {
+            onSwipeRight();
+          }
+        }
+      }
+    }, { passive: true });
+  }
+
+  // Bind Open Book Spread Events
+  function bindOpenBookEvents(totalSpreads) {
+    const spreadElem = document.getElementById("menuBookSpread");
+
+    // Page-Turn Navigation Functions with 3D animation
+    function turnNext() {
+      if (isAnimating) return;
+      if (currentSpread < totalSpreads - 1) {
+        isAnimating = true;
+        if (spreadElem) spreadElem.classList.add("turning-next");
+        const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 40 : 450;
+        setTimeout(() => {
+          currentSpread++;
+          renderMenuBook();
+          isAnimating = false;
+        }, delay);
+      }
+    }
+
+    function turnPrev() {
+      if (isAnimating) return;
+      if (currentSpread > 0) {
+        isAnimating = true;
+        if (spreadElem) spreadElem.classList.add("turning-prev");
+        const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 40 : 450;
+        setTimeout(() => {
+          currentSpread--;
+          renderMenuBook();
+          isAnimating = false;
+        }, delay);
+      }
+    }
+
+    function closeBook() {
+      if (isAnimating) return;
+      isAnimating = true;
+      if (spreadElem) spreadElem.classList.add("is-closing");
+      const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 40 : 380;
+      setTimeout(() => {
+        isBookOpen = false;
+        renderMenuBook();
+        isAnimating = false;
+      }, delay);
+    }
+
+    // 1. Previous Page (Bottom-Left Corner)
+    const prevBtn = document.getElementById("bookCornerPrev");
+    if (prevBtn) {
+      prevBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        turnPrev();
+      });
+    }
+
+    // 2. Next Page (Bottom-Right Corner)
+    const nextBtn = document.getElementById("bookCornerNext");
+    if (nextBtn) {
+      nextBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        turnNext();
+      });
+    }
+
+    // 3. Close Book (Bottom-Right Corner on Final Spread)
+    const cornerCloseBtn = document.getElementById("bookCornerClose");
+    if (cornerCloseBtn) {
+      cornerCloseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeBook();
+      });
+    }
+
+    // 4. Quick Close Tab (Top-Right of open book)
+    const quickCloseBtn = document.getElementById("bookQuickClose");
+    if (quickCloseBtn) {
+      quickCloseBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        closeBook();
+      });
+    }
+
+    // 5. Touch Swipe Support
+    if (spreadElem) {
+      bindTouchSwipe(spreadElem, () => {
+        turnNext();
+      }, () => {
+        turnPrev();
+      });
+    }
+
+    // 6. Variant Dropdown Price Updater
+    document.querySelectorAll("[data-variant-select]").forEach(select => {
+      select.addEventListener("change", () => {
+        const prodId = select.getAttribute("data-variant-select");
+        const selectedOpt = select.options[select.selectedIndex];
+        const delta = parseInt(selectedOpt.getAttribute("data-delta"), 10) || 0;
+        const product = (window.MENU_PRODUCTS || []).find(p => p.id === prodId);
         if (product) {
           const priceElem = document.getElementById(`price-${prodId}`);
           if (priceElem) {
@@ -232,66 +613,67 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
 
-    // 2. Quantity Stepper (+ / -)
-    document.querySelectorAll("[data-stepper-btn]").map = null; // safety
-    document.querySelectorAll("[data-stepper-btn]").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const prodId = btn.getAttribute("data-target");
-        const action = btn.getAttribute("data-stepper-btn");
-        const qtyElem = document.getElementById(`qty-${prodId}`);
-        if (!qtyElem) return;
-
-        let curQty = parseInt(qtyElem.textContent, 10) || 1;
-        if (action === "plus") {
-          curQty = Math.min(20, curQty + 1);
-        } else if (action === "minus") {
-          curQty = Math.max(1, curQty - 1);
-        }
-        qtyElem.textContent = curQty;
-      });
-    });
-
-    // 3. Add to Cart
+    // 7. Add to Cart Handler
     document.querySelectorAll("[data-add-product]").forEach(btn => {
-      btn.addEventListener("click", () => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
         const prodId = btn.getAttribute("data-add-product");
-        const qtyElem = document.getElementById(`qty-${prodId}`);
-        const qty = qtyElem ? parseInt(qtyElem.textContent, 10) || 1 : 1;
-
-        // Selected variant
         let variantId = null;
-        const selectedChip = document.querySelector(`#variantChips-${prodId} .variant-chip.selected`);
-        if (selectedChip) {
-          variantId = selectedChip.getAttribute("data-variant-id");
+        
+        const variantSelect = document.querySelector(`[data-variant-select="${prodId}"]`);
+        if (variantSelect) {
+          variantId = variantSelect.value;
         }
 
-        const success = window.cart.addItem(prodId, variantId, qty);
+        const success = window.cart.addItem(prodId, variantId, 1);
         if (success) {
-          // Visual feedback on button
           btn.classList.add("added-success");
-          const originalText = btn.innerHTML;
-          btn.innerHTML = `<span class="btn-icon">✓</span> <span class="btn-text">Added!</span>`;
+          const originalHtml = btn.innerHTML;
+          btn.innerHTML = `<span class="cart-btn-icon">✓</span> <span class="cart-btn-text">Added!</span>`;
           setTimeout(() => {
             btn.classList.remove("added-success");
-            btn.innerHTML = originalText;
+            btn.innerHTML = originalHtml;
           }, 1200);
 
-          // Trigger Toast
-          const product = window.MENU_PRODUCTS.find(p => p.id === prodId);
-          showToast(`Added ${qty}× ${product ? product.name : "item"} to cart!`, "success");
+          const product = (window.MENU_PRODUCTS || []).find(p => p.id === prodId);
+          showToast(`Added 1× ${product ? product.name : "item"} to cart!`, "success");
         }
       });
     });
   }
 
-  // Search Input Handler
+  // Responsive Book Resize Listener (Smooth layout switch between Desktop 2-page & Mobile single-page)
+  let wasMobileView = window.matchMedia("(max-width: 640px)").matches;
+  let resizeTimer = null;
+  window.addEventListener("resize", () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => {
+      const isNowMobile = window.matchMedia("(max-width: 640px)").matches;
+      if (isNowMobile !== wasMobileView) {
+        if (isNowMobile) {
+          currentSpread = currentSpread * 2;
+        } else {
+          currentSpread = Math.floor(currentSpread / 2);
+        }
+        wasMobileView = isNowMobile;
+        if (isBookOpen) {
+          renderMenuBook();
+        }
+      }
+    }, 120);
+  });
+
+  // Preserve renderMenu alias for any external or fallback calls
+  const renderMenu = renderMenuBook;
+
+  // Search Input Handler (Preserved in code if search input is ever rendered)
   if (searchInput) {
     searchInput.addEventListener("input", (e) => {
       searchQuery = e.target.value;
       if (searchClearBtn) {
         searchClearBtn.style.display = searchQuery.trim() ? "block" : "none";
       }
-      renderMenu();
+      renderMenuBook();
     });
   }
 
@@ -301,20 +683,22 @@ document.addEventListener("DOMContentLoaded", () => {
         searchInput.value = "";
         searchQuery = "";
         searchClearBtn.style.display = "none";
-        renderMenu();
+        renderMenuBook();
       }
     });
   }
 
-  // Tag filter handlers
-  filterTags.forEach(tagBtn => {
-    tagBtn.addEventListener("click", () => {
-      filterTags.forEach(t => t.classList.remove("active"));
-      tagBtn.classList.add("active");
-      activeFilterTag = tagBtn.getAttribute("data-filter-tag");
-      renderMenu();
+  // Filter tag handlers (Preserved in code)
+  if (filterTags && filterTags.length > 0) {
+    filterTags.forEach(tagBtn => {
+      tagBtn.addEventListener("click", () => {
+        filterTags.forEach(t => t.classList.remove("active"));
+        tagBtn.classList.add("active");
+        activeFilterTag = tagBtn.getAttribute("data-filter-tag");
+        renderMenuBook();
+      });
     });
-  });
+  }
 
   // ==========================================
   // CART DRAWER & CHECKOUT
