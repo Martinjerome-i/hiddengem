@@ -1701,7 +1701,7 @@ body.in-scroll-hero .sticky-mobile-cart-bar {
 
   .story-secondary-heart-wrap {
     width: 170px;
-    left: -12px;
+    left: 4px;
     bottom: -10px;
   }
 
@@ -1715,7 +1715,7 @@ body.in-scroll-hero .sticky-mobile-cart-bar {
 @media (max-width: 375px) {
   .story-secondary-heart-wrap {
     width: 145px;
-    left: -6px;
+    left: 2px;
   }
 }
 
