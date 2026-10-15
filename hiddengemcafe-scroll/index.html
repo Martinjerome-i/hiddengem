@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIDDEN GEM CAFE — Pure Scroll Scrub Experience</title>
+  <meta name="description" content="High-performance scroll-controlled image sequence animation for Hidden Gem Cafe featuring 200 HD frames." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥤</text></svg>" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --color-terracotta: #C7837C;
+      --scroll-hero-height: 300vh;
+    }
+
+    html {
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      background-color: var(--color-terracotta);
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+    }
+
+    /* Scroll Container */
+    .scroll-container {
+      position: relative;
+      width: 100%;
+      height: var(--scroll-hero-height);
+      background-color: var(--color-terracotta);
+    }
+
+    /* Sticky Canvas Stage */
+    .scroll-sticky-stage {
+      position: sticky;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      background-color: var(--color-terracotta);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      will-change: transform;
+    }
+
+    .scroll-canvas {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Custom vertical edge progress bar (hidden as y-axis scrollbar is removed) */
+    .scroll-edge-progress {
+      display: none !important;
+    }
+
+    .scroll-edge-fill {
+      width: 100%;
+      height: 0%;
+      background: #FFDFBA;
+      box-shadow: 0 0 8px rgba(255, 223, 186, 0.6);
+      transition: height 0.05s linear;
+    }
+
+    /* Minimal Subtle Scroll Hint */
+    .scroll-subtle-hint {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(44, 26, 17, 0.55);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 9999px;
+      padding: 8px 18px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: #FFF5E4;
+      opacity: 1;
+      pointer-events: none;
+      transition: opacity 0.35s ease-out, transform 0.35s ease-out;
+    }
+
+    .scroll-subtle-hint.faded {
+      opacity: 0;
+      transform: translate(-50%, 15px);
+    }
+
+    .scroll-chevron {
+      display: inline-block;
+      animation: bounceHint 1.8s infinite;
+    }
+
+    @keyframes bounceHint {
+      0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+      40% { transform: translateY(4px); }
+      60% { transform: translateY(2px); }
+    }
+
+    /* Development Diagnostic HUD (?debug=1) */
+    .scroll-perf-hud {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 99999;
+      background: rgba(18, 10, 6, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 12px 16px;
+      color: #FFF5E4;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 11px;
+      line-height: 1.5;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45);
+      pointer-events: auto;
+      min-width: 230px;
+    }
+
+    .scroll-perf-hud .hud-title {
+      font-weight: 700;
+      font-size: 11px;
+      color: #FFB347;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .scroll-perf-hud .hud-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 3px;
+    }
+
+    .scroll-perf-hud .hud-val {
+      font-weight: 600;
+    }
+
+    .scroll-perf-hud .hud-fps-good { color: #4ADE80; }
+    .scroll-perf-hud .hud-fps-med { color: #FACC15; }
+    .scroll-perf-hud .hud-fps-bad { color: #F87171; }
+  </style>
+</head>
+<body>
+
+  <!-- Full Viewport Scroll Animation Experience -->
+  <main class="scroll-container" id="scrollHeroSection">
+    <div class="scroll-sticky-stage" id="scrollHeroSticky">
+      <!-- Full-viewport canvas for frame sequence -->
+      <canvas id="scrollCanvas" class="scroll-canvas" aria-label="Hidden Gem Cafe frame sequence"></canvas>
+
+      <!-- Minimal, unobtrusive vertical edge progress bar on right edge -->
+      <div class="scroll-edge-progress" id="scrollEdgeProgress" aria-hidden="true">
+        <div class="scroll-edge-fill" id="scrollEdgeFill"></div>
+      </div>
+
+      <!-- Subtle initial scroll hint, automatically fades out upon first scroll -->
+      <div class="scroll-subtle-hint" id="scrollSubtleHint" aria-hidden="true">
+        <span>Scroll to explore</span>
+        <span class="scroll-chevron">↓</span>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /**
+     * HIDDEN GEM CAFE - Standalone 200-Frame Scroll Sequence Engine
+     * Self-contained engine for direct execution inside hiddengemcafe-scroll/
+     */
+    (function () {
+      'use strict';
+
+      const TOTAL_FRAMES = 168;
+      const FRAME_WIDTH = 1920;
+      const FRAME_HEIGHT = 1080;
+      const BRAND_BG = '#C7837C';
+      const MAX_CACHE_SIZE = 30;
+      const MAX_CONCURRENT_REQUESTS = 4;
+
+      class StandaloneScrollSequence {
+        constructor() {
+          this.totalFrames = TOTAL_FRAMES;
+          const isMobile = (typeof window !== 'undefined' && window.innerWidth <= 768);
+          this.maxCacheSize = isMobile ? 16 : MAX_CACHE_SIZE;
+          this.cache = new Map();
+          this.status = new Array(TOTAL_FRAMES).fill('idle');
+          this.loadQueue = [];
+          this.activeRequests = 0;
+
+          this.section = document.getElementById('scrollHeroSection');
+          this.canvas = document.getElementById('scrollCanvas');
+          this.progressFill = document.getElementById('scrollEdgeFill');
+          this.scrollHint = document.getElementById('scrollSubtleHint');
+          this.ctx = null;
+
+          this.currentFrameIndex = 0;
+          this.targetFrameIndex = 0;
+          this.lastRenderedIndex = -1;
+          this.lastScrollY = 0;
+          this.scrollDirection = 1;
+          this.ticking = false;
+
+          // Diagnostics
+          const urlParams = new URLSearchParams(window.location.search);
+          this.debugEnabled = urlParams.has('debug') || window.localStorage.getItem('gem_scroll_debug') === '1';
+          this.hudElement = null;
+          this.fpsTimestamps = [];
+          this.currentFps = 60;
+          this.lastRenderTimeMs = 0;
+
+          this.init();
+        }
+
+        getFrameUrl(index) {
+          const num = String(index + 1).padStart(4, '0');
+          return `../hidden-gem-webp-frames/frame_${num}.webp`;
+        }
+
+        init() {
+          if (!this.canvas || !this.section) return;
+
+          this.ctx = this.canvas.getContext('2d', { alpha: false, desynchronized: true });
+          this.handleResize();
+
+          // Anchor frame 0 (persistent)
+          this.enqueueFrame(0, 100, true);
+          // Anchor frame 199 (persistent)
+          this.enqueueFrame(this.totalFrames - 1, 95, true);
+
+          // Preload first few frames
+          for (let i = 1; i <= 5; i++) {
+            this.enqueueFrame(i, 90 - i, false);
+          }
+
+          // Initial Frame 0 render
+          this.waitForFrame(0).then((img) => {
+            if (img && this.currentFrameIndex === 0) {
+              this.renderFrame(0, true);
+            }
+          });
+
+          this.bindEvents();
+          this.updateScrollPosition();
+
+          if (this.debugEnabled) {
+            this.initDebugHUD();
+          }
+
+          this.exposeDiagnostics();
+        }
+
+        enqueueFrame(index, priority = 10, isPersistent = false) {
+          if (index < 0 || index >= this.totalFrames) return;
+          if (this.cache.has(index)) {
+            const item = this.cache.get(index);
+            item.lastAccessed = performance.now();
+            if (isPersistent) item.persistent = true;
+            return;
+          }
+
+          const existing = this.loadQueue.find(q => q.index === index);
+          if (existing) {
+            if (priority > existing.priority) {
+              existing.priority = priority;
+              this.loadQueue.sort((a, b) => b.priority - a.priority);
+            }
+            return;
+          }
+
+          if (this.status[index] === 'loading') return;
+
+          this.status[index] = 'queued';
+          this.loadQueue.push({ index, priority, isPersistent });
+          this.loadQueue.sort((a, b) => b.priority - a.priority);
+          this.processQueue();
+        }
+
+        processQueue() {
+          while (this.activeRequests < MAX_CONCURRENT_REQUESTS && this.loadQueue.length > 0) {
+            const next = this.loadQueue.shift();
+            this.loadFrame(next.index, next.isPersistent);
+          }
+        }
+
+        loadFrame(index, isPersistent = false) {
+          this.activeRequests++;
+          this.status[index] = 'loading';
+
+          const img = new Image();
+          img.src = this.getFrameUrl(index);
+
+          const onDecoded = () => {
+            this.activeRequests--;
+            this.status[index] = 'decoded';
+            this.addToCache(index, img, isPersistent);
+
+            if (this.currentFrameIndex === index) {
+              this.renderFrame(index);
+            }
+            this.processQueue();
+            if (this.debugEnabled) this.updateDebugHUD();
+          };
+
+          const onError = () => {
+            this.activeRequests--;
+            this.status[index] = 'error';
+            this.processQueue();
+            if (this.debugEnabled) this.updateDebugHUD();
+          };
+
+          if ('decode' in img) {
+            img.decode().then(onDecoded).catch(() => {
+              if (img.complete && img.naturalWidth > 0) onDecoded();
+              else { img.onload = onDecoded; img.onerror = onError; }
+            });
+          } else {
+            img.onload = onDecoded;
+            img.onerror = onError;
+          }
+        }
+
+        addToCache(index, img, isPersistent = false) {
+          const persistent = isPersistent || index === 0 || index === (this.totalFrames - 1);
+          this.cache.set(index, { img, lastAccessed: performance.now(), persistent });
+
+          if (this.cache.size > this.maxCacheSize) {
+            this.evictDistantFrames();
+          }
+        }
+
+        evictDistantFrames() {
+          const evictable = [];
+          const curr = this.currentFrameIndex;
+
+          for (const [idx, item] of this.cache.entries()) {
+            if (!item.persistent) {
+              const dist = Math.abs(idx - curr);
+              evictable.push({ index: idx, dist, lastAccessed: item.lastAccessed, img: item.img });
+            }
+          }
+
+          evictable.sort((a, b) => (b.dist !== a.dist ? b.dist - a.dist : a.lastAccessed - b.lastAccessed));
+          const excess = this.cache.size - this.maxCacheSize;
+          const toRemove = evictable.slice(0, Math.max(0, excess));
+
+          for (const item of toRemove) {
+            item.img.onload = null;
+            item.img.onerror = null;
+            item.img.src = '';
+            this.cache.delete(item.index);
+            this.status[item.index] = 'idle';
+          }
+        }
+
+        waitForFrame(index) {
+          if (this.cache.has(index)) return Promise.resolve(this.cache.get(index).img);
+          return new Promise((resolve) => {
+            const check = () => {
+              if (this.cache.has(index)) resolve(this.cache.get(index).img);
+              else if (this.status[index] === 'error') resolve(null);
+              else setTimeout(check, 25);
+            };
+            this.enqueueFrame(index, 100);
+            check();
+          });
+        }
+
+        getBestAvailableFrame(targetIndex) {
+          if (this.cache.has(targetIndex)) {
+            const item = this.cache.get(targetIndex);
+            item.lastAccessed = performance.now();
+            return item.img;
+          }
+          for (let offset = 1; offset < this.totalFrames; offset++) {
+            const prev = targetIndex - offset;
+            if (prev >= 0 && this.cache.has(prev)) return this.cache.get(prev).img;
+            const next = targetIndex + offset;
+            if (next < this.totalFrames && this.cache.has(next)) return this.cache.get(next).img;
+          }
+          if (this.cache.has(0)) return this.cache.get(0).img;
+          return null;
+        }
+
+        prioritizeNeighborhood(centerIndex, direction = 1) {
+          for (let i = Math.max(0, centerIndex - 3); i <= Math.min(this.totalFrames - 1, centerIndex + 3); i++) {
+            if (!this.cache.has(i)) this.enqueueFrame(i, 80 - Math.abs(i - centerIndex));
+          }
+          const lookahead = 14;
+          if (direction > 0) {
+            for (let i = centerIndex + 4; i <= Math.min(this.totalFrames - 1, centerIndex + lookahead); i++) {
+              if (!this.cache.has(i)) this.enqueueFrame(i, 50 - (i - centerIndex));
+            }
+          } else {
+            for (let i = centerIndex - 4; i >= Math.max(0, centerIndex - lookahead); i--) {
+              if (!this.cache.has(i)) this.enqueueFrame(i, 50 - (centerIndex - i));
+            }
+          }
+        }
+
+        bindEvents() {
+          window.addEventListener('scroll', () => {
+            if (!this.ticking) {
+              window.requestAnimationFrame(() => {
+                this.updateScrollPosition();
+                this.ticking = false;
+              });
+              this.ticking = true;
+            }
+          }, { passive: true });
+
+          window.addEventListener('resize', () => this.handleResize(), { passive: true });
+          window.addEventListener('orientationchange', () => this.handleResize(), { passive: true });
+        }
+
+        updateScrollPosition() {
+          if (!this.section) return;
+
+          const currentScrollY = window.pageYOffset || document.documentElement.scrollTop;
+          const scrollableDist = this.scrollableDist || (this.section.offsetHeight - window.innerHeight);
+
+          if (scrollableDist <= 0) return;
+
+          const scrolled = currentScrollY - (this.sectionOffsetTop || 0);
+          const progress = Math.max(0, Math.min(1, scrolled / scrollableDist));
+          const targetIndex = Math.min(this.totalFrames - 1, Math.max(0, Math.round(progress * (this.totalFrames - 1))));
+
+          this.scrollDirection = currentScrollY >= this.lastScrollY ? 1 : -1;
+          this.lastScrollY = currentScrollY;
+
+          this.currentProgress = progress;
+          this.targetFrameIndex = targetIndex;
+          this.currentFrameIndex = targetIndex;
+
+          if (this.progressFill) {
+            this.progressFill.style.height = `${(progress * 100).toFixed(1)}%`;
+          }
+
+          if (this.scrollHint) {
+            if (progress > 0.012) this.scrollHint.classList.add('faded');
+            else this.scrollHint.classList.remove('faded');
+          }
+
+          this.prioritizeNeighborhood(targetIndex, this.scrollDirection);
+          this.renderFrame(targetIndex);
+
+          if (this.debugEnabled) this.updateDebugHUD();
+        }
+
+        renderFrame(frameIndex, forceRedraw = false) {
+          if (!this.canvas || !this.ctx) return;
+          if (frameIndex === this.lastRenderedIndex && !forceRedraw) return;
+
+          const startTime = performance.now();
+          const img = this.getBestAvailableFrame(frameIndex);
+          if (!img) return;
+
+          const cw = this.canvas.width;
+          const ch = this.canvas.height;
+          const iw = img.naturalWidth || FRAME_WIDTH;
+          const ih = img.naturalHeight || FRAME_HEIGHT;
+
+          // Full-bleed edge-to-edge COVER strategy:
+          // Guarantees ZERO empty side gaps by scaling to fill the entire viewport width and height.
+          const scale = Math.max(cw / iw, ch / ih);
+          const dw = Math.round(iw * scale);
+          const dh = Math.round(ih * scale);
+
+          // Center horizontally: since dw >= cw, dx <= 0, guaranteeing edge-to-edge cover with zero side gaps
+          const dx = Math.round((cw - dw) * 0.5);
+
+          // Vertical positioning: when dh > ch, clamp top crop so the "HIDDEN" typography (at y=50px in 1080p source) is preserved
+          const idealDy = Math.round((ch - dh) * 0.5);
+          const maxTopCrop = -Math.round(42 * scale); // Leaves safe padding above 'HIDDEN'
+          const dy = Math.max(ch - dh, Math.max(idealDy, maxTopCrop));
+
+          // Interpolate background color to match drink palette across 168 frames
+          const stops = [
+            { f: 0,   rgb: [199, 131, 124] },
+            { f: 28,  rgb: [199, 130, 124] },
+            { f: 42,  rgb: [133, 155, 92]  },
+            { f: 70,  rgb: [133, 155, 92]  },
+            { f: 84,  rgb: [197, 177, 71]  },
+            { f: 130, rgb: [180, 150, 64]  },
+            { f: 147, rgb: [101, 69, 36]   },
+            { f: 167, rgb: [102, 69, 37]   }
+          ];
+          let bgColor = 'rgb(199, 131, 124)';
+          if (frameIndex <= stops[0].f) bgColor = `rgb(${stops[0].rgb.join(',')})`;
+          else if (frameIndex >= stops[stops.length - 1].f) bgColor = `rgb(${stops[stops.length - 1].rgb.join(',')})`;
+          else {
+            for (let i = 0; i < stops.length - 1; i++) {
+              if (frameIndex >= stops[i].f && frameIndex <= stops[i + 1].f) {
+                const ratio = (frameIndex - stops[i].f) / (stops[i + 1].f - stops[i].f);
+                const r = Math.round(stops[i].rgb[0] + (stops[i + 1].rgb[0] - stops[i].rgb[0]) * ratio);
+                const g = Math.round(stops[i].rgb[1] + (stops[i + 1].rgb[1] - stops[i].rgb[1]) * ratio);
+                const b = Math.round(stops[i].rgb[2] + (stops[i + 1].rgb[2] - stops[i].rgb[2]) * ratio);
+                bgColor = `rgb(${r}, ${g}, ${b})`;
+                break;
+              }
+            }
+          }
+
+          this.ctx.fillStyle = bgColor;
+          this.ctx.fillRect(0, 0, cw, ch);
+
+          if (this.section) this.section.style.backgroundColor = bgColor;
+
+          this.ctx.imageSmoothingEnabled = true;
+          this.ctx.imageSmoothingQuality = 'high';
+
+          this.ctx.drawImage(img, dx, dy, dw, dh);
+          this.lastRenderedIndex = frameIndex;
+
+          const renderDuration = performance.now() - startTime;
+          this.recordPerformance(renderDuration);
+        }
+
+        handleResize() {
+          if (!this.canvas) return;
+
+          // Use window viewport dimensions directly to guarantee 100% full-screen coverage
+          const w = window.innerWidth;
+          const h = window.innerHeight;
+
+          if (this.section) {
+            this.sectionH = this.section.offsetHeight;
+            this.sectionOffsetTop = this.section.offsetTop;
+            this.scrollableDist = Math.max(1, this.sectionH - h);
+          }
+
+          // Mobile memory & fill-rate safety:
+          // Cap DPR to 2.0 on desktop, 1.5 on mobile
+          const isMobile = w <= 768;
+          const maxDpr = isMobile ? 1.5 : 2.0;
+          const dpr = Math.min(window.devicePixelRatio || 1, maxDpr);
+
+          const targetW = Math.round(w * dpr);
+          const targetH = Math.round(h * dpr);
+
+          if (this.canvas.width !== targetW || this.canvas.height !== targetH) {
+            this.canvas.width = targetW;
+            this.canvas.height = targetH;
+            if (this.ctx) {
+              this.ctx.imageSmoothingEnabled = true;
+              this.ctx.imageSmoothingQuality = 'high';
+            }
+          }
+          this.renderFrame(this.currentFrameIndex, true);
+        }
+
+        recordPerformance(durationMs) {
+          this.lastRenderTimeMs = durationMs;
+          const now = performance.now();
+          this.fpsTimestamps.push(now);
+          while (this.fpsTimestamps.length > 0 && this.fpsTimestamps[0] < now - 1000) {
+            this.fpsTimestamps.shift();
+          }
+          this.currentFps = this.fpsTimestamps.length;
+        }
+
+        getEstimatedMemoryMB() {
+          const bytesPerFrame = FRAME_WIDTH * FRAME_HEIGHT * 4;
+          return ((this.cache.size * bytesPerFrame) / (1024 * 1024)).toFixed(1);
+        }
+
+        getMetrics() {
+          return {
+            fps: this.currentFps,
+            renderTimeMs: Number(this.lastRenderTimeMs.toFixed(2)),
+            currentFrame: this.currentFrameIndex + 1,
+            targetFrame: this.targetFrameIndex + 1,
+            totalFrames: this.totalFrames,
+            progressPercent: Number(((this.currentProgress || 0) * 100).toFixed(1)),
+            cachedFrames: this.cache.size,
+            maxCacheFrames: this.maxCacheSize,
+            decodedTotal: this.status.filter(s => s === 'decoded').length,
+            estimatedMemoryMB: Number(this.getEstimatedMemoryMB()),
+            activeRequests: this.activeRequests,
+            queuedRequests: this.loadQueue.length
+          };
+        }
+
+        initDebugHUD() {
+          if (document.getElementById('scrollPerfHUD')) return;
+          const hud = document.createElement('aside');
+          hud.id = 'scrollPerfHUD';
+          hud.className = 'scroll-perf-hud';
+          hud.innerHTML = `
+            <div class="hud-title">
+              <span>⚡ Gem Scrub Diagnostics</span>
+              <button type="button" id="hudCloseBtn" style="color: #FFB347; font-size: 13px; line-height: 1; padding: 2px;">✕</button>
+            </div>
+            <div class="hud-row"><span>FPS:</span><span class="hud-val hud-fps-good" id="hudFps">-- FPS</span></div>
+            <div class="hud-row"><span>Render Latency:</span><span class="hud-val" id="hudRenderTime">-- ms</span></div>
+            <div class="hud-row"><span>Frame:</span><span class="hud-val" id="hudFrame">1 / ${this.totalFrames}</span></div>
+            <div class="hud-row"><span>Scroll Progress:</span><span class="hud-val" id="hudProgress">0.0%</span></div>
+            <div class="hud-row"><span>Decoded / Total:</span><span class="hud-val" id="hudDecoded">0 / ${this.totalFrames}</span></div>
+            <div class="hud-row"><span>In-Memory Cache:</span><span class="hud-val" id="hudCache">0 / ${this.maxCacheSize} frames</span></div>
+            <div class="hud-row"><span>Est. RAM:</span><span class="hud-val" id="hudMemory">0 MB</span></div>
+            <div class="hud-row"><span>Network Queue:</span><span class="hud-val" id="hudQueue">0 active | 0 queued</span></div>
+          `;
+          document.body.appendChild(hud);
+          this.hudElement = hud;
+          document.getElementById('hudCloseBtn').addEventListener('click', () => { hud.style.display = 'none'; });
+        }
+
+        updateDebugHUD() {
+          if (!this.hudElement || this.hudElement.style.display === 'none') return;
+          const m = this.getMetrics();
+          const elFps = document.getElementById('hudFps');
+          const elRender = document.getElementById('hudRenderTime');
+          const elFrame = document.getElementById('hudFrame');
+          const elProgress = document.getElementById('hudProgress');
+          const elDecoded = document.getElementById('hudDecoded');
+          const elCache = document.getElementById('hudCache');
+          const elMemory = document.getElementById('hudMemory');
+          const elQueue = document.getElementById('hudQueue');
+
+          if (elFps) {
+            elFps.textContent = `${m.fps} FPS`;
+            elFps.className = `hud-val ${m.fps >= 50 ? 'hud-fps-good' : m.fps >= 30 ? 'hud-fps-med' : 'hud-fps-bad'}`;
+          }
+          if (elRender) elRender.textContent = `${m.renderTimeMs} ms`;
+          if (elFrame) elFrame.textContent = `${m.currentFrame} / ${m.totalFrames}`;
+          if (elProgress) elProgress.textContent = `${m.progressPercent}%`;
+          if (elDecoded) elDecoded.textContent = `${m.decodedTotal} / ${m.totalFrames}`;
+          if (elCache) elCache.textContent = `${m.cachedFrames} / ${m.maxCacheFrames}`;
+          if (elMemory) elMemory.textContent = `~${m.estimatedMemoryMB} MB`;
+          if (elQueue) elQueue.textContent = `${m.activeRequests} active | ${m.queuedRequests} queued`;
+        }
+
+        exposeDiagnostics() {
+          window.__SCROLL_PERF__ = {
+            controller: this,
+            getMetrics: () => this.getMetrics(),
+            toggleDebugHUD: (forceState) => {
+              if (!this.hudElement) this.initDebugHUD();
+              const show = typeof forceState === 'boolean' ? forceState : this.hudElement.style.display === 'none';
+              this.hudElement.style.display = show ? 'block' : 'none';
+              this.debugEnabled = show;
+              if (show) this.updateDebugHUD();
+            }
+          };
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        new StandaloneScrollSequence();
+      });
+    })();
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HIDDEN GEM CAFE — Your New Happy Place | Artisanal Shakes & Specialty Coffee</title>
+  <meta name="description" content="Welcome to Hidden Gem Cafe — trendy neighbourhood cafe serving handcrafted milkshakes, specialty cold coffees, 100% pure cold-pressed fruit juices, artisanal gelato, and warm fudge brownies." />
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🥤</text></svg>" />
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Alex+Brush&family=Bebas+Neue&family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="in-scroll-hero">
+
+  <main id="home">
+
+    <!-- ====================================================================
+         IMMERSIVE FULL-VIEWPORT SCROLL ANIMATION SECTION
+         Pin canvas stage using position: sticky.
+         Image sequence fills viewport cleanly with zero overlays or text.
+         ==================================================================== -->
+    <section class="scroll-hero-section" id="scrollHeroSection" aria-label="Hidden Gem Cafe Scroll Experience">
+      <div class="scroll-hero-sticky" id="scrollHeroSticky">
+        <!-- Full-viewport canvas for frame sequence -->
+        <canvas id="scrollCanvas" class="scroll-canvas" aria-label="Hidden Gem Cafe frame animation"></canvas>
+
+        <!-- Subtle, slim edge progress indicator on right edge -->
+        <div class="scroll-edge-progress" id="scrollEdgeProgress" aria-hidden="true">
+          <div class="scroll-edge-fill" id="scrollEdgeFill"></div>
+        </div>
+
+        <!-- Minimal subtle initial scroll hint, automatically fades out upon first scroll -->
+        <div class="scroll-subtle-hint" id="scrollSubtleHint" aria-hidden="true">
+          <span>Scroll to explore</span>
+          <span class="scroll-chevron">↓</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         COMPACT DOCKING SITE HEADER
+         Reveals cleanly directly below the scroll-animation section
+         Docks sticky at top of viewport as user enters the cafe content
+         ==================================================================== -->
+    <header class="site-header compact-dock-header" id="siteHeader">
+      <div class="container">
+        <!-- Brand Wordmark -->
+        <a href="#home" class="brand-logo-link" aria-label="Hidden Gem Cafe Home">
+          <span class="brand-gem">HIDDEN GEM</span>
+          <span class="brand-cafe">Cafe</span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <nav class="main-nav" aria-label="Primary Navigation">
+          <a href="#menu" class="nav-link">Menu & Order</a>
+          <a href="#story" class="nav-link">Our Story</a>
+          <a href="#location" class="nav-link">Find Us</a>
+        </nav>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <!-- Cart Drawer Trigger (Icon-Only) -->
+          <button type="button" class="btn-cart-nav btn-cart-icon-only" data-cart-toggle aria-label="Open cart">
+            <span class="cart-icon-symbol" aria-hidden="true">🛒</span>
+            <span class="cart-count-badge" style="display: none;">0</span>
+          </button>
+
+          <!-- Mobile Hamburger Toggle -->
+          <button type="button" class="hamburger-btn" id="mobileNavToggle" aria-label="Open Navigation Menu">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Mobile Off-Canvas Drawer -->
+    <div class="mobile-nav-drawer" id="mobileNavDrawer" aria-hidden="true">
+      <div class="mobile-nav-header">
+        <div class="brand-logo-link">
+          <span class="brand-gem">HIDDEN GEM</span>
+          <span class="brand-cafe">Cafe</span>
+        </div>
+        <button type="button" class="mobile-nav-close" id="mobileNavClose" aria-label="Close menu">✕</button>
+      </div>
+      <div class="mobile-nav-links">
+        <a href="#home" class="mobile-nav-link" onclick="document.getElementById('mobileNavDrawer').classList.remove('open')">Scroll Hero</a>
+        <a href="#menu" class="mobile-nav-link" onclick="document.getElementById('mobileNavDrawer').classList.remove('open')">Menu & Order Online</a>
+        <a href="#story" class="mobile-nav-link" onclick="document.getElementById('mobileNavDrawer').classList.remove('open')">Our Story & Craft</a>
+        <a href="#location" class="mobile-nav-link" onclick="document.getElementById('mobileNavDrawer').classList.remove('open')">Find Us & Timings</a>
+      </div>
+      <div class="mobile-nav-actions">
+        <button type="button" class="btn btn-cart-nav" data-cart-toggle onclick="document.getElementById('mobileNavDrawer').classList.remove('open')">
+          <span>🛒 View Cart / Checkout</span>
+          <span class="cart-count-badge" style="display: none;">0</span>
+        </button>
+        <a href="https://wa.me/919566905775" target="_blank" rel="noopener noreferrer" class="btn-header-whatsapp" style="justify-content: center;">
+          <span>💬 Direct WhatsApp Chat</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         MENU & ONLINE ORDERING CATALOGUE (SINGLE-PAGE CATALOGUE)
+         ==================================================================== -->
+    <section class="section-padding menu-section" id="menu">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">
+            <span class="eyebrow-icon">✨</span> Handcrafted & Made Fresh to Order
+          </div>
+          <h2 class="section-title">The Complete Cafe Menu</h2>
+          <p class="section-desc">
+            Select your favourite handcrafted shakes, pure fruit pressings, gelato, and warm brownies. Customise sizes, explore tasting notes, and order directly on WhatsApp.
+          </p>
+        </div>
+
+        <!-- Menu Controls Bar -->
+        <div class="menu-controls-wrapper">
+          <!-- Real-Time Search Bar -->
+          <div class="menu-search-bar">
+            <span class="search-icon">🔍</span>
+            <input 
+              type="text" 
+              id="menuSearchInput" 
+              class="menu-search-input" 
+              placeholder="Search by name, fruit, flavour (e.g. mango, pistachio, cold brew, brownie)..." 
+              aria-label="Search menu items"
+            />
+            <button type="button" class="search-clear-btn" id="searchClearBtn" aria-label="Clear search">✕</button>
+          </div>
+
+          <!-- Category Navigation Pills -->
+          <div class="category-nav-scroll" id="categoryNavList" role="tablist" aria-label="Menu categories">
+            <!-- Rendered dynamically by app.js from data.js -->
+          </div>
+
+          <!-- Quick Filter Chips -->
+          <div class="filter-tags-row">
+            <button type="button" class="filter-tag-chip active" data-filter-tag="all">All Items</button>
+            <button type="button" class="filter-tag-chip" data-filter-tag="bestseller">⭐ Bestsellers</button>
+            <button type="button" class="filter-tag-chip" data-filter-tag="featured">✨ Cafe Specials</button>
+          </div>
+        </div>
+
+        <!-- Product Cards Grid -->
+        <div class="product-grid" id="menuProductGrid">
+          <!-- Populated dynamically by app.js from data.js -->
+        </div>
+      </div>
+
+      <!-- Organic Cloud Divider at bottom of Menu, transitioning to Story -->
+      <div class="section-divider-cloud divider-menu-to-story" aria-hidden="true">
+        <svg viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
+          <path d="M0,42 C160,78 320,15 480,52 C640,88 800,20 960,58 C1120,92 1280,28 1440,46 L1440,70 L0,70 Z" fill="currentColor" opacity="0.35"></path>
+          <path d="M0,28 C140,62 280,10 440,44 C600,76 760,18 920,50 C1080,82 1240,20 1380,42 L1440,50 L1440,70 L0,70 Z" fill="currentColor"></path>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         OUR STORY & CRAFT
+         ==================================================================== -->
+    <section class="section-padding story-section" id="story">
+      <div class="container">
+        <div class="story-grid">
+          <!-- Narrative Content -->
+          <div class="story-content">
+            <div class="section-eyebrow story-eyebrow">
+              <span class="eyebrow-icon">☕</span> Neighbourhood Soul · Pollachi
+            </div>
+            <h2 class="story-title">
+              Crafting Your Daily Dose of <span class="story-script">Happiness</span>
+            </h2>
+            <p class="story-p">
+              Tucked away on Palladam Road, Pollachi, <strong>HIDDEN GEM CAFE</strong> was born out of an obsessive love for honest ingredients, slow-steeped craft, and spaces that feel like home.
+            </p>
+            <p class="story-p">
+              We believe a cafe shouldn’t just serve drinks — it should be your sanctuary. Whether you’re catching the afternoon breeze with a fresh Alphonso Mango Bliss, diving into a warm Belgian fudge brownie, or recharging with an 18-hour cold brew, every creation is made with warmth, love, and pride.
+            </p>
+
+            <!-- 4 Story Pillars -->
+            <div class="story-pillars">
+              <div class="pillar-item">
+                <div class="pillar-icon">🌱</div>
+                <div class="pillar-body">
+                  <h4 class="pillar-title">100% Real Farm Fruit</h4>
+                  <p class="pillar-desc">Ratnagiri Alphonso mangoes & farm-picked berries with zero artificial syrups.</p>
+                </div>
+              </div>
+              <div class="pillar-item">
+                <div class="pillar-icon">☕</div>
+                <div class="pillar-body">
+                  <h4 class="pillar-title">Artisanal Small Roast</h4>
+                  <p class="pillar-desc">Single-origin 100% Arabica beans roasted locally in micro-batches.</p>
+                </div>
+              </div>
+              <div class="pillar-item">
+                <div class="pillar-icon">🍫</div>
+                <div class="pillar-body">
+                  <h4 class="pillar-title">Pure Belgian Cocoa</h4>
+                  <p class="pillar-desc">70% dark chocolate brownies baked fresh daily in our open kitchen.</p>
+                </div>
+              </div>
+              <div class="pillar-item">
+                <div class="pillar-icon">🌿</div>
+                <div class="pillar-body">
+                  <h4 class="pillar-title">Eco-Conscious Promise</h4>
+                  <p class="pillar-desc">100% biodegradable cups, bagasse straws, and plastic-free packaging.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Asymmetrical Curated Photo Collage -->
+          <div class="story-editorial-gallery">
+            <div class="gallery-primary-card">
+              <img 
+                src="assets/products/iced-spanish-latte.jpg" 
+                alt="Hidden Gem Cafe Specialty Spanish Latte and slow-roasted coffee beans" 
+                class="gallery-primary-img"
+                loading="lazy"
+              />
+              <div class="gallery-stamp-badge">
+                <span class="stamp-icon">☕</span>
+                <span class="stamp-text">Pollachi · Est. 2026</span>
+              </div>
+            </div>
+            
+            <!-- Overlapping Polaroid Secondary Card -->
+            <div class="gallery-secondary-card">
+              <img 
+                src="assets/products/belgian-fudge-brownie.jpg" 
+                alt="Freshly baked warm Belgian fudge brownie" 
+                class="gallery-secondary-img"
+                loading="lazy"
+              />
+              <div class="gallery-polaroid-caption">
+                <span class="polaroid-sparkle">✨</span>
+                <span>Warm Belgian Brownie · Baked Daily</span>
+              </div>
+            </div>
+
+            <!-- Floating Pill Tag -->
+            <div class="gallery-floating-pill">
+              <span class="pill-dot">●</span>
+              <span>18-Hour Slow Steeped Cold Brew</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organic Cloud Divider at bottom of Story, transitioning to Location -->
+      <div class="section-divider-cloud divider-story-to-location" aria-hidden="true">
+        <svg viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
+          <path d="M0,42 C160,78 320,15 480,52 C640,88 800,20 960,58 C1120,92 1280,28 1440,46 L1440,70 L0,70 Z" fill="currentColor" opacity="0.35"></path>
+          <path d="M0,28 C140,62 280,10 440,44 C600,76 760,18 920,50 C1080,82 1240,20 1380,42 L1440,50 L1440,70 L0,70 Z" fill="currentColor"></path>
+        </svg>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         VISIT US & LOCATION
+         ==================================================================== -->
+    <section class="section-padding location-section" id="location">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-eyebrow">
+            <span class="eyebrow-icon">📍</span> Come Say Hi
+          </div>
+          <h2 class="section-title">Find Us in Pollachi</h2>
+          <p class="section-desc">Stop by for a slow coffee or order direct to your doorstep via WhatsApp.</p>
+        </div>
+
+        <div class="location-grid">
+          <!-- Information Card -->
+          <div class="location-info-card">
+            <div>
+              <div class="info-group">
+                <div class="info-label"><span>📍</span> Store Address</div>
+                <div class="info-text">
+                  <strong>115, Siva Complex, Kumaran Street</strong><br />
+                  Palladam Road, Pollachi<br />
+                  Tamil Nadu 642002<br />
+                  <span class="info-landmark">(Kumaran Street, Palladam Road)</span>
+                </div>
+              </div>
+
+              <div class="info-group">
+                <div class="info-label"><span>⏰</span> Opening Hours</div>
+                <div class="info-text">
+                  <div class="hours-row">
+                    <span>Monday – Sunday:</span>
+                    <strong>8:00 AM – 11:30 PM</strong>
+                  </div>
+                  <div class="hours-row">
+                    <span>Weekends (Fri–Sun):</span>
+                    <strong>8:00 AM – 12:30 AM</strong>
+                  </div>
+                  <div class="status-live-badge">
+                    <span class="pulse-dot"></span>
+                    <span>Open Now · Dine-in, Takeaway & Delivery</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="info-group">
+                <div class="info-label"><span>💬</span> WhatsApp Ordering Line</div>
+                <div class="info-text">
+                  <a href="https://wa.me/919566905775" target="_blank" rel="noopener noreferrer" class="whatsapp-phone-link">
+                    <span>+91 95669 05775</span>
+                    <span class="whatsapp-badge-chip">Active</span>
+                  </a>
+                  <div class="info-subnote">Orders placed on WhatsApp are prepared immediately by our baristas.</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="location-actions">
+              <a href="https://maps.google.com/?q=115+Siva+Complex+Kumaran+Street+Palladam+Road+Pollachi+Tamil+Nadu+642002" target="_blank" rel="noopener noreferrer" class="btn btn-hero-primary">
+                <span>Get Directions on Google Maps</span>
+                <span>↗</span>
+              </a>
+              <button type="button" class="btn-header-whatsapp" data-cart-toggle>
+                <span>Start WhatsApp Order</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Map / Graphic Container -->
+          <div class="location-map-wrap">
+            <div class="map-card-inner">
+              <div class="map-pin-pulse">
+                <span class="map-pin-icon">📍</span>
+              </div>
+              <h3 class="map-card-title">HIDDEN GEM CAFE</h3>
+              <p class="map-card-subtitle">Kumaran Street · Palladam Road · Pollachi</p>
+              <div class="map-card-chips">
+                <span class="map-chip">🚗 Parking Available</span>
+                <span class="map-chip">🛵 Doorstep Delivery</span>
+                <span class="map-chip">☕ Dine-in & Takeaway</span>
+              </div>
+              <p class="map-card-address">
+                115, Siva Complex, Kumaran Street, Palladam Road, Pollachi, Tamil Nadu 642002.
+              </p>
+              <a href="https://maps.google.com/?q=115+Siva+Complex+Kumaran+Street+Palladam+Road+Pollachi+Tamil+Nadu+642002" target="_blank" rel="noopener noreferrer" class="btn btn-map-action">
+                <span>Open in Google Maps App</span>
+                <span>↗</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organic Cloud Divider at bottom of Location, transitioning into Footer -->
+      <div class="section-divider-cloud divider-location-to-footer" aria-hidden="true">
+        <svg viewBox="0 0 1440 70" fill="none" preserveAspectRatio="none">
+          <path d="M0,42 C160,78 320,15 480,52 C640,88 800,20 960,58 C1120,92 1280,28 1440,46 L1440,70 L0,70 Z" fill="currentColor" opacity="0.35"></path>
+          <path d="M0,28 C140,62 280,10 440,44 C600,76 760,18 920,50 C1080,82 1240,20 1380,42 L1440,50 L1440,70 L0,70 Z" fill="currentColor"></path>
+        </svg>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================
+       FOOTER
+       ====================================================================== -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand-col">
+          <div class="footer-brand-wrap">
+            <span class="footer-brand-title">HIDDEN GEM</span>
+            <span class="footer-brand-script">Cafe</span>
+            <span class="footer-steam-icon" title="Freshly Brewed">☕</span>
+          </div>
+          <p class="footer-desc">
+            Your neighbourhood haven for handcrafted shakes, slow-steeped cold brews, pure fruit pressings, and warm fudge brownies. Handcrafted with love in Pollachi.
+          </p>
+          <div class="footer-badges-row">
+            <span class="footer-mini-badge">🌱 100% Real Farm Produce</span>
+            <span class="footer-mini-badge">🐾 Pet Friendly</span>
+          </div>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="#home" class="footer-link">Home (Scroll Hero)</a></li>
+            <li><a href="#menu" class="footer-link">Menu & Order Online</a></li>
+            <li><a href="#story" class="footer-link">Our Story & Craft</a></li>
+            <li><a href="#location" class="footer-link">Store Location</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Signature Gems</h4>
+          <ul class="footer-links">
+            <li><a href="#menu" class="footer-link">Strawberry Cream Shake</a></li>
+            <li><a href="#menu" class="footer-link">Alphonso Mango Bliss</a></li>
+            <li><a href="#menu" class="footer-link">Pistachio Dream Shake</a></li>
+            <li><a href="#menu" class="footer-link">Cold-Pressed Watermelon</a></li>
+            <li><a href="#menu" class="footer-link">Warm Belgian Fudge Brownie</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <h4 class="footer-heading">Cafe Hours & Contact</h4>
+          <div class="footer-hours-box">
+            <div class="footer-hours-line">
+              <span>Mon – Thu:</span>
+              <strong>8:00 AM – 11:30 PM</strong>
+            </div>
+            <div class="footer-hours-line">
+              <span>Fri – Sun:</span>
+              <strong>8:00 AM – 12:30 AM</strong>
+            </div>
+          </div>
+          <p class="footer-contact-item">
+            <strong>WhatsApp Ordering:</strong><br />
+            <a href="https://wa.me/919566905775" target="_blank" rel="noopener noreferrer" class="footer-wa-link">
+              <span>💬 +91 95669 05775</span>
+            </a>
+          </p>
+          <p class="footer-address-text">
+            📍 115, Siva Complex, Kumaran Street, Palladam Road, Pollachi, Tamil Nadu 642002
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2026 HIDDEN GEM CAFE. All rights reserved. Handcrafted with pride in Pollachi, Tamil Nadu.</div>
+        <div class="footer-bottom-links">
+          <span>Sample prices marked as editable demo content</span>
+          <span>·</span>
+          <span>WhatsApp Direct Ordering System</span>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ======================================================================
+       CART SLIDE-OVER DRAWER
+       ====================================================================== -->
+  <div class="cart-backdrop" id="cartBackdrop"></div>
+
+  <aside class="cart-drawer" id="cartDrawer" aria-hidden="true" aria-label="Shopping Cart">
+    <!-- Drawer Header -->
+    <div class="cart-drawer-header">
+      <h3 class="cart-title">
+        <span>🛒</span>
+        <span>Your Order Basket</span>
+      </h3>
+      <button type="button" class="cart-close-btn" id="cartCloseBtn" aria-label="Close cart">✕</button>
+    </div>
+
+    <!-- Drawer Body -->
+    <div class="cart-drawer-body">
+      <!-- Empty View -->
+      <div class="cart-empty-view" id="cartEmptyView">
+        <div class="cart-empty-icon">🥤</div>
+        <h4 style="font-family: var(--font-heading); font-size: 1.3rem; margin-bottom: 8px;">Your cart is empty</h4>
+        <p style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px;">Treat yourself to our Strawberry Cream Shake, Alphonso Mango Bliss, or a warm Belgian Fudge Brownie.</p>
+        <a href="#menu" class="btn btn-hero-primary" style="font-size: 0.9rem; padding: 12px 24px;" onclick="document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('cartBackdrop').classList.remove('visible');">
+          Browse Menu
+        </a>
+      </div>
+
+      <!-- Filled View -->
+      <div id="cartFilledView" style="display: none;">
+        <!-- Order Type Toggle -->
+        <div class="order-type-selector">
+          <label class="order-type-option">
+            <input type="radio" name="orderType" value="delivery" checked />
+            <span>🛵 Doorstep Delivery</span>
+          </label>
+          <label class="order-type-option">
+            <input type="radio" name="orderType" value="pickup" />
+            <span>☕ Cafe Pickup</span>
+          </label>
+        </div>
+
+        <!-- Cart Items List -->
+        <ul class="cart-items-list" id="cartItemsList">
+          <!-- Rendered by app.js -->
+        </ul>
+
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 18px;">
+          <button type="button" id="clearCartBtn" style="font-size: 0.78rem; color: var(--text-muted); text-decoration: underline;">
+            Clear Cart
+          </button>
+        </div>
+
+        <!-- Customer Form -->
+        <div style="background: var(--color-cream-bg); border-radius: var(--radius-md); padding: 16px; margin-bottom: 20px; border: 1px solid var(--color-cream-border-subtle);">
+          <h4 style="font-family: var(--font-heading); font-size: 1.05rem; margin-bottom: 12px;">Customer Details</h4>
+
+          <div class="cart-form-group">
+            <label class="cart-form-label" for="custNameInput">Your Name *</label>
+            <input type="text" id="custNameInput" class="cart-form-input" placeholder="e.g. Priya Sharma" required />
+          </div>
+
+          <div class="cart-form-group">
+            <label class="cart-form-label" for="custPhoneInput">Mobile Number (Optional)</label>
+            <input type="tel" id="custPhoneInput" class="cart-form-input" placeholder="e.g. 98200 12345" />
+          </div>
+
+          <!-- Delivery Address Fields (Hidden if Pickup) -->
+          <div id="deliveryAddressSection">
+            <div class="cart-form-group">
+              <label class="cart-form-label" for="custAddressInput">Delivery Address *</label>
+              <textarea id="custAddressInput" class="cart-form-input" placeholder="Flat / House No., Building Name, Street..."></textarea>
+            </div>
+
+            <div class="cart-form-group">
+              <label class="cart-form-label" for="custLandmarkInput">Nearby Landmark</label>
+              <input type="text" id="custLandmarkInput" class="cart-form-input" placeholder="e.g. Near Joggers Park / Next to Almond Bakery" />
+            </div>
+          </div>
+
+          <div class="cart-form-group">
+            <label class="cart-form-label" for="custNotesInput">Special Notes / Dietary Requests</label>
+            <input type="text" id="custNotesInput" class="cart-form-input" placeholder="e.g. Less sugar, extra whipped cream, hot brownie" />
+          </div>
+        </div>
+
+        <!-- Bill Breakdown -->
+        <div class="cart-bill-summary">
+          <div class="bill-row">
+            <span>Items Subtotal</span>
+            <span id="cartSubtotal">₹0</span>
+          </div>
+          <div class="bill-row">
+            <span>Eco Packaging</span>
+            <span class="badge-free">FREE</span>
+          </div>
+          <div class="bill-row">
+            <span>Delivery Fee</span>
+            <span id="cartDeliveryFee">₹0</span>
+          </div>
+          <div class="bill-row total">
+            <span>Total to Pay</span>
+            <span id="cartGrandTotal" style="color: var(--color-forest);">₹0</span>
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); text-align: right; margin-top: 4px;">
+            (Inclusive of all taxes)
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Drawer Footer -->
+    <div class="cart-drawer-footer">
+      <button type="button" class="btn-order-whatsapp" id="orderWhatsAppBtn">
+        <span>Order via WhatsApp</span>
+        <span>💬</span>
+      </button>
+      <p class="order-disclaimer-note">
+        Clicking will prepare a formatted WhatsApp message. You can review the details before opening WhatsApp.
+      </p>
+    </div>
+  </aside>
+
+  <!-- ======================================================================
+       ORDER REVIEW MODAL (Confirmation Before WhatsApp Redirect)
+       ====================================================================== -->
+  <div class="modal-backdrop" id="reviewModalBackdrop"></div>
+
+  <div class="order-review-modal" id="orderReviewModal" role="dialog" aria-modal="true" aria-labelledby="reviewModalTitle">
+    <div class="modal-header">
+      <h3 class="modal-title" id="reviewModalTitle">Review Your WhatsApp Order</h3>
+      <button type="button" class="modal-close-btn" id="closeReviewModalBtn" aria-label="Close review modal">✕</button>
+    </div>
+    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 12px;">
+      Here is the exact message that will be sent to <strong>Hidden Gem Cafe (+91 95669 05775)</strong>:
+    </p>
+
+    <!-- Message Preview Pre -->
+    <pre class="review-message-preview" id="reviewMessagePreview"></pre>
+
+    <div style="background: #FEF3C7; border: 1px solid #F59E0B; border-radius: var(--radius-sm); padding: 12px; font-size: 0.82rem; color: #92400E; margin-bottom: 18px;">
+      <strong>⚠️ Important:</strong> WhatsApp will open with this message. Please tap <strong>Send</strong> in WhatsApp. Your order is confirmed only after the cafe replies with an acceptance!
+    </div>
+
+    <div class="modal-actions">
+      <button type="button" class="btn btn-secondary" id="backToEditBtn" onclick="document.getElementById('orderReviewModal').classList.remove('open'); document.getElementById('reviewModalBackdrop').classList.remove('visible');">
+        Back to Edit
+      </button>
+      <button type="button" class="btn-order-whatsapp" id="confirmSendWhatsAppBtn" style="flex: 1;">
+        <span>Open WhatsApp & Send</span>
+        <span>↗</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Post-Order Confirmation Dialog -->
+  <div class="order-review-modal" id="orderSentNoticeModal" style="text-align: center;">
+    <div style="font-size: 3.2rem; margin-bottom: 12px;">🎉</div>
+    <h3 style="font-family: var(--font-heading); font-size: 1.6rem; margin-bottom: 8px;">WhatsApp Order Dispatched!</h3>
+    <p style="font-size: 0.95rem; color: var(--text-secondary); margin-bottom: 20px;">
+      Your order details have been passed to WhatsApp. Please remember to hit <strong>Send</strong> in your chat with <strong>Hidden Gem Cafe</strong>.
+    </p>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 24px;">
+      Our team will review your order immediately and reply with estimated preparation and delivery times!
+    </p>
+    <button type="button" class="btn btn-hero-primary" id="closeNoticeModalBtn" style="margin: 0 auto;">
+      Got it, thank you!
+    </button>
+  </div>
+
+  <!-- ======================================================================
+       STICKY MOBILE CART ACTION BAR
+       ====================================================================== -->
+  <div class="sticky-mobile-cart-bar" id="stickyMobileCartBar" data-cart-toggle>
+    <div class="mobile-cart-left">
+      <span class="mobile-cart-count" id="mobileCartCount">0 items</span>
+      <span class="mobile-cart-total" id="mobileCartTotal">₹0</span>
+    </div>
+    <button type="button" class="mobile-cart-btn">
+      <span>View Cart & Order</span>
+      <span>→</span>
+    </button>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/hero-controller.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
+
