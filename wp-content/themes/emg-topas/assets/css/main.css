@@ -561,7 +561,7 @@ mark { background: none; color: inherit; }
 	z-index: 3;
 	grid-row: 3;
 	display: flex;
-	justify-content: space-between;
+	justify-content: flex-end;
 	align-items: flex-end;
 	gap: 24px;
 	flex-wrap: wrap;
